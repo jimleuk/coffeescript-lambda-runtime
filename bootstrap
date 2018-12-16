@@ -1,0 +1,40 @@
+#!/opt/bin/node
+
+const fs = require('fs')
+const CoffeeScript = require('coffeescript')
+
+// We'll set this so all later .coffee files we require() are
+// compiled/transpiled automatically.
+CoffeeScript.register()
+
+// bootstrap.coffee is our port of the node-custom-lambda (https://github.com/
+// lambci/node-custom-lambda) bootstrap.js. This file handles the lifecycle of
+// the lambda. Note: when a lambda runs this file, the cwd() is /var/task
+const bootstrap = '/opt/bootstrap.coffee'
+
+// These are options we pass to the CoffeeScript compiler.
+const options = {
+    bare: true,
+    header: false,
+    sourceMap: false,
+    inlineMap: false,
+    // Due to our execution happening inside /var/task but our babel.config.js
+    // located in /opt, the transpilation step could never find our babel config
+    // and would fail. We needed to pass the "root" option to babel to fix this
+    // but the coffeescript cli --transpile option was unfortunately just a 
+    // boolean flag.
+    // The workaround was to run our bootstrap.coffee using the coffescript
+    // nodeJS api instead (hence this file is a nodeJS script) where it is
+    // possible to pass the required 'root' option.
+    transpile: { root: '/opt/' }
+}
+
+fs.readFile(bootstrap, 'utf8', (err, data) => {
+    if (err) {
+        throw new Error(`Could not find ${bootstrap}: ${err.code} ${err.message}`);
+    }
+    // Unlike your everyday coffeescript workflow, we're not writing the
+    // compiled output to disk but rather evaluated on the fly. The result is
+    // that we can save a few millisecs by skipping the i/o.
+    CoffeeScript.run(data, options);
+});

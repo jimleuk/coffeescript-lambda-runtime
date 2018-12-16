@@ -1,0 +1,41 @@
+{
+  "name": "coffeescript-lambda-runtime",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A CoffeeScript custom runtime for aws lambda",
+  "main": "index.js",
+  "engines": {
+    "node": ">=8.10.0"
+  },
+  "scripts": {
+    "build": "cake build",
+    "publish": "cake publish",
+    "test": "cake build && cake test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimleuk/coffeescript-lambda-runtime.git"
+  },
+  "keywords": [
+    "coffeescript",
+    "aws",
+    "lambda",
+    "custom",
+    "runtime",
+    "serverless",
+    "open-rebellion"
+  ],
+  "author": "Jim Le <@jimle_uk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jimleuk/coffeescript-lambda-runtime/issues"
+  },
+  "homepage": "https://github.com/jimleuk/coffeescript-lambda-runtime#readme",
+  "dependencies": {
+    "@babel/core": "7.2.0",
+    "@babel/polyfill": "7.0.0",
+    "@babel/preset-env": "7.2.0",
+    "@babel/register": "7.0.0",
+    "coffeescript": "2.3.2"
+  }
+}

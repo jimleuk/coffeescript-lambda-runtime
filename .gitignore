@@ -1,0 +1,6 @@
+node_modules/
+build/
+
+# tests generated files
+test/layer/
+test/lambda/lambda.zip
