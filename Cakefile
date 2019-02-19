@@ -92,22 +92,25 @@ task 'test', 'runs test',
     console.log 'packaging test... ok'
 
     console.log 'running test...'
-    { stdout, stderr } = await exec "
-	    docker run
-            --rm
-            -v $(PWD)/test/lambda:/var/task
-            -v $(PWD)/test/layer:/opt
-            lambci/lambda:provided
-            index.handler
-    "
 
-    [ result ] = stdout.split(/\n/)
+    handlers = [ 'handlerCallback', 'handlerAsync' ]
+
+    results = await Promise.all handlers.map (name) ->
+        exec "
+            docker run
+                --rm
+                -v $(PWD)/test/lambda:/var/task
+                -v $(PWD)/test/layer:/opt
+                lambci/lambda:provided
+                index.#{name}
+        "
+
     expected = '{"statusCode":200,"body":"{\\"message\\":\\"CoffeeScript Serverless v1.0! Your function executed successfully!\\",\\"input\\":{}}"}'
+    outputs = (result.stdout.split(/\n/)[0] is expected for result in results)
 
-    passed = result is expected
-    console.log "running test... #{if passed then 'PASS' else 'FAIL'}"
+    console.log "running test (#{handlers[index]}) ... #{if output then 'PASS' else 'FAIL'}" for output, index in outputs
 
-    if not passed
+    if not outputs.every (output) -> output
         console.log stderr
         process.exit 1
 

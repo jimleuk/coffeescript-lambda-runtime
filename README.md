@@ -3,18 +3,26 @@
 A custom runtime for AWS Lambda to execute functions in CoffeeScript.
 
 > **Note**: This repository is essentially a CoffeeScript port and fork of 
-[Node-Custom-Lambda](https://github.com/lambci/node-custom-lambda). The only 
-real difference is where `Node-Custom-Lambda` expects functions to return a 
-promise, `coffeescript-lambda-runtime` opts to stay with the traditional 
-callback method.
+[Node-Custom-Lambda](https://github.com/lambci/node-custom-lambda).
 
 > **New to CoffeeScript?**  
 > I recommend starting at https://coffeescript.org/
 
 ## How does it work?
-`CoffeeScript-lambda-runtime` works by taking care of the compiling and execution of CoffeeScript source code at time of request. This means end-users of the runtime are no longer required to compile their CoffeeScript code to javascript before uploading their functions to AWS Lambda.
+`CoffeeScript-lambda-runtime` works by taking care of the compiling and execution of CoffeeScript source code at time of request. This means end-users of the runtime are not required to compile their CoffeeScript code to javascript before uploading their functions to AWS Lambda.
   
-Simply write your functions as you would for NodeJs and it should just work.
+Simply write your functions as you would for Node.js and it should just work.
+```coffeescript
+# feel alive again!
+exports.handler = (event, context) ->
+    statusCode: 200,
+    body:
+        JSON.stringify
+            message: 'CoffeeScript Serverless v1.0! Your function executed successfully!',
+            input: event,
+```
+
+alternatively, if you prefer the callback method:
 ```coffeescript
 # feel alive again!
 exports.handler = (event, context, callback) ->
@@ -32,7 +40,7 @@ exports.handler = (event, context, callback) ->
 
 Project|CoffeeScript|NodeJS|ARN|
 |-|-|-|-|
-|v1.0.0|v2.3.2|v8.10.0|arn:aws:lambda:eu-west-2:321742921541:layer:coffeescript:3|
+|v1.1.0|v2.3.2|v8.10.0|arn:aws:lambda:eu-west-2:321742921541:layer:coffeescript:4|
 
 ## Building the runtime layer
 

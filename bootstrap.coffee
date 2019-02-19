@@ -1,4 +1,5 @@
 http = require 'http'
+util = require 'util'
 
 RUNTIME_PATH = '/2018-06-01/runtime'
 
@@ -30,16 +31,20 @@ start = () ->
         return process.exit 1
 
 processEvents = (handler) ->
+    isAsync = isAsyncHandler handler
     while true
         { event, context } = await nextInvocation()
 
         try
-            result = await new Promise (resolve) ->
-                handler event, context, (err, response) ->
-                    throw new Error err if err?
-                    resolve response
+            if not isAsync
+                result = await new Promise (resolve) ->
+                    handler event, context, (err, response) ->
+                        throw new Error err if err?
+                        resolve response
+                        return
                     return
-                return
+            else
+                result = await handler event, context
         catch e
             await invokeError e, context
             continue
@@ -163,5 +168,10 @@ toLambdaErr = ({ name, message, stack }) ->
         errorMessage: message,
         stackTrace: if stack then stack.split('\n').slice 1 else '',
     }
+
+isAsyncHandler = (handler) ->
+    if util.types isnt undefined then util.types.isAsyncFunction handler
+    else if handler.constructor.name is 'AsyncFunction' then true
+    else handler.length < 3
 
 start()
